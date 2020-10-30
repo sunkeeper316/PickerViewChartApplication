@@ -28,5 +28,14 @@
         android:text="--:--:--"
         android:textSize="24sp"
         android:textStyle="bold" />
+    <TextView
+        android:id="@+id/tv_show"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingRight="10dp"
+        android:text="123  "
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
 </LinearLayout>

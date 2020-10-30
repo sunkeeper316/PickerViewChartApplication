@@ -2,52 +2,79 @@ package com.charder.pickerviewapplication
 
 import android.app.Activity
 import android.os.Bundle
-import android.os.ProxyFileDescriptorCallback
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.bigkoo.pickerview.builder.OptionsPickerBuilder
 import com.bigkoo.pickerview.builder.TimePickerBuilder
+import com.bigkoo.pickerview.view.OptionsPickerView
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class MainFragment : Fragment() {
 
     lateinit var tv_date : TextView
     lateinit var tv_time : TextView
+    lateinit var tv_show : TextView
 
     var targetDate:Date = Date()
     var targetTime:Date = Date()
 
-    override fun onCreateView(inflater: LayoutInflater,container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_main, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        tv_show = view.findViewById(R.id.tv_show)
         tv_date = view.findViewById(R.id.tv_date)
         tv_time = view.findViewById(R.id.tv_time)
         tv_date.setOnClickListener {
             var c = Calendar.getInstance()
             c.time = targetDate
-            datePicker(requireActivity() ,c,callback = {
+            datePicker(requireActivity(), c, callback = {
                 targetDate = it
                 tv_date.text = getDate(targetDate)
-            } )
+            })
         }
         tv_time.setOnClickListener {
             var c = Calendar.getInstance()
             c.time = targetTime
-            timePicker(requireActivity() ,c,callback = {
+            timePicker(requireActivity(), c, callback = {
                 targetTime = it
                 tv_time.text = getTime(targetTime)
-            } )
+            })
+        }
+
+        tv_show.setOnClickListener {
+            var strList = arrayListOf("上班" , "下班")
+            optionPicker(requireActivity(), strList, callback = {
+                tv_show.setText(it)
+            })
         }
     }
+    fun optionPicker(activity: Activity, strList: MutableList<String>, callback: (String) -> Unit){
+        val pvoption = OptionsPickerBuilder(activity) { options1 , options2 , options3 ,v ->
 
-    fun timePicker(activity: Activity , selectedDate:Calendar , callback: (Date) -> Unit){
-        selectedDate.set(0,0,0,selectedDate.get(Calendar.HOUR),0,0)
+            callback(strList.get(options1))
+
+        }
+            .setTitleText("test")
+            .isDialog(true)
+            .isCenterLabel(true)
+            .build<String>()
+        pvoption.setPicker(strList)
+        pvoption.show()
+    }
+    fun timePicker(activity: Activity, selectedDate: Calendar, callback: (Date) -> Unit){
+        selectedDate.set(0, 0, 0, selectedDate.get(Calendar.HOUR), 0, 0)
         val pvTime = TimePickerBuilder(requireContext()) { date: Date?, v: View? ->
             date?.let {
                 callback(it)
@@ -61,13 +88,25 @@ class MainFragment : Fragment() {
             .build()
         pvTime.show()
     }
-    fun datePicker(activity: Activity , selectedDate:Calendar , callback: (Date) -> Unit){
+    fun datePicker(activity: Activity, selectedDate: Calendar, callback: (Date) -> Unit){
         //仿ios日期滾輪
 //        val selectedDate = Calendar.getInstance() //系统当前时间
         val startDate = Calendar.getInstance()
-        startDate.set(selectedDate.get(Calendar.YEAR) - 100,selectedDate.get(Calendar.MONTH),selectedDate.get(Calendar.DAY_OF_MONTH))
+        startDate.set(
+            selectedDate.get(Calendar.YEAR) - 100,
+            selectedDate.get(Calendar.MONTH),
+            selectedDate.get(
+                Calendar.DAY_OF_MONTH
+            )
+        )
         val endDate = Calendar.getInstance()
-        endDate.set(selectedDate.get(Calendar.YEAR) + 100,selectedDate.get(Calendar.MONTH),selectedDate.get(Calendar.DAY_OF_MONTH))
+        endDate.set(
+            selectedDate.get(Calendar.YEAR) + 100,
+            selectedDate.get(Calendar.MONTH),
+            selectedDate.get(
+                Calendar.DAY_OF_MONTH
+            )
+        )
         val pvTime = TimePickerBuilder(requireContext()) { date: Date?, v: View? ->
             date?.let {
                 callback(it)
